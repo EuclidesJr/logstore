@@ -1,16 +1,25 @@
 package com.cingo.logstore.repostory;
 
-import java.util.List;
+import com.cingo.logstore.entity.Log;
 
 import javax.persistence.Query;
-
-import com.cingo.logstore.entity.Log;
+import java.util.List;
 
 public class LogRepository extends Repository {
 
-	public List<Log> findAllOrdened() {
+	public List<Log> findAllOrdered() {
 		Query query = this.getManager().createQuery("SELECT e FROM Log e ORDER BY occurrences desc");
 		return query.getResultList();
+	}
+
+	public Log findById(Integer id) {
+		Query query = this.getManager().createQuery("SELECT e FROM Log e WHERE id = :id");
+		query.setParameter("id", id);
+		return (Log) query.getSingleResult();
+	}
+
+	public void delete(Log log) {
+		this.remove(log);
 	}
 	
 	public void add(Log log) {

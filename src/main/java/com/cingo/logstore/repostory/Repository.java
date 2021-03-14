@@ -1,8 +1,8 @@
 package com.cingo.logstore.repostory;
 
-import javax.persistence.EntityManager;
-
 import com.cingo.logstore.jpa.LogStoreEntityManagerFactory;
+
+import javax.persistence.EntityManager;
 
 public class Repository {
 
@@ -28,6 +28,12 @@ public class Repository {
 	public void update(Object o) {
 		this.getManager().getTransaction().begin();
 		this.getManager().merge(o);
+		this.getManager().getTransaction().commit();
+	}
+
+	public void remove(Object o) {
+		this.getManager().getTransaction().begin();
+		this.getManager().remove(o);
 		this.getManager().getTransaction().commit();
 	}
 
