@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,9 +60,26 @@ class LogStoreJobTest {
 	private Log fourthLogLineMock;
 	
 	@BeforeEach
-	void setUp() throws LogWrapperBuildException {
+	void setUp() throws LogWrapperBuildException, IOException {
 		MockitoAnnotations.initMocks(this);
-		when(this.logWrapperFactoryMock.build()).thenReturn(this.logWrapperMock);
+
+		List<String> newLogLineContents = new ArrayList<String>();
+		newLogLineContents.add(LINE_CONTENT_1);
+		newLogLineContents.add(LINE_CONTENT_2);
+		newLogLineContents.add(LINE_CONTENT_3);
+		newLogLineContents.add(LINE_CONTENT_4);
+
+		File file = new File("cinglog.txt");
+		FileOutputStream fos = new FileOutputStream(file);
+
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+
+		for (int i = 0; i< newLogLineContents.size(); i++) {
+			bw.write(newLogLineContents.get(i));
+			bw.newLine();
+		}
+
+		when(this.logWrapperFactoryMock.build(file)).thenReturn(this.logWrapperMock);
 		List<String> logLineContents = new ArrayList<String>();
 		logLineContents.add(LINE_CONTENT_1);
 		when(this.logWrapperMock.getLineContents()).thenReturn(logLineContents);
@@ -74,13 +92,15 @@ class LogStoreJobTest {
 	@Test
 	void testLogWrapperBuild() throws JobException, LogWrapperBuildException {
 		this.logStoreJob.run();
-		
-		verify(this.logWrapperFactoryMock, times(1)).build();
+
+		File file = new File("cinglog.txt");
+		verify(this.logWrapperFactoryMock, times(1)).build(file);
 	}
 	
 	@Test
 	void testLogWrapperBuildException() throws LogWrapperBuildException {
-		when(this.logWrapperFactoryMock.build()).thenThrow(LogWrapperBuildException.class);
+		File file = new File("cinglog.txt");
+		when(this.logWrapperFactoryMock.build(file)).thenThrow(LogWrapperBuildException.class);
 		assertThrows(
 				JobException.class,
 	           () -> this.logStoreJob.run()

@@ -6,9 +6,9 @@ public class LogWrapperFactory {
 	
 	private static final String LOG_FILE = "cingohc.log";
 
-	public LogWrapper build() throws LogWrapperBuildException {
+	public LogWrapper build(File file) throws LogWrapperBuildException {
 		try {
-			return new LogFileWrapper(new File(this.getClass().getClassLoader().getResource(LOG_FILE).toURI()));
+			return new LogFileWrapper(file);
 		} catch (Exception e) {
 			throw new LogWrapperBuildException(e);
 		}
